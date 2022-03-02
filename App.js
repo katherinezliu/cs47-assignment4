@@ -1,19 +1,45 @@
-import { StyleSheet, Text, Image, Pressable, SafeAreaView, StatusBar} from "react-native";
+import { 
+  StyleSheet, 
+  Text, 
+  Image, 
+  Pressable, 
+  SafeAreaView, 
+  StatusBar,
+} from "react-native";
 import { useState, useEffect } from "react";
 import { ResponseType, useAuthRequest } from "expo-auth-session";
 import { myTopTracks, albumTracks } from "./utils/apiOptions";
 import { REDIRECT_URI, SCOPES, CLIENT_ID, ALBUM_ID } from "./utils/constants";
-import Colors from "./Themes/colors"
-import Images from "./Themes/images"
+import Colors from "./Themes/colors";
+import Images from "./Themes/images";
 
-import SongList from "./components/SongList"
-import { View, /* StatusBar */} from "react-native-web";
+import SongList from "./components/SongList";
+
+import SongDetail from "./components/SongDetail";
+import SongPreview from "./components/SongPreview";
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 // Endpoints for authorizing with Spotify
 const discovery = {
   authorizationEndpoint: "https://accounts.spotify.com/authorize",
   tokenEndpoint: "https://accounts.spotify.com/api/token"
 };
+
+const Stack = createStackNavigator();
+
+function Home({ tracks, navigation }) {
+  return (
+    <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.header}>
+        <Image style={styles.spotify_icon} source={Images.spotify} />
+        <Text style={styles.header_text}>My Top Tracks</Text>
+      </SafeAreaView>
+      <SongList tracks={tracks} navigation={navigation}/>
+    </SafeAreaView>
+  );
+}
 
 export default function App() {
   StatusBar.setBarStyle('light-content');
@@ -56,25 +82,41 @@ export default function App() {
   }, [token]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      
+    
+    <>  
       {token ? (
         <>
-          <SafeAreaView style={styles.header}>
-            <Image style={styles.spotify_icon} source={Images.spotify} />
-            <Text style={styles.header_text}>My Top Tracks</Text>
-          </SafeAreaView>
-          <SongList tracks={tracks}/>
+        <NavigationContainer>
+        {/* change header: https://stackoverflow.com/questions/45329620/change-navigation-header-background-color */}
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Group screenOptions={{ 
+              headerBackTitle:'Back', 
+              headerStyle:styles.nav_header_style, 
+              headerTitleStyle:styles.nav_header_text, 
+            }}>
+              {/* pass props: https://stackoverflow.com/questions/60439210/how-to-pass-props-to-screen-component-with-a-tab-navigator */}
+              <Stack.Screen name="Home" children={props => <Home tracks={tracks} {...props} />} options={{headerShown: false}} />
+              <Stack.Screen name="SongDetail" component={SongDetail} options={{ title: 'Song details' }}/>
+              <Stack.Screen name="SongPreview" component={SongPreview} options={{ title: 'Song preview' }}/>
+            </Stack.Group>
+          </Stack.Navigator>
+        </NavigationContainer>
         </>
       ) : (
-        <Pressable style={styles.connect_button} onPress={promptAsync}>
+        <SafeAreaView style={styles.container}>
+        <Pressable onPress={promptAsync} style={({ pressed }) => [
+          {
+            opacity: pressed ? 0.7 : 1,
+          },
+          styles.connect_button
+        ]}>
           <Image style={styles.spotify_small_icon} source={Images.spotify} />
           <Text style={styles.connect_text}>CONNECT WITH SPOTIFY</Text>
         </Pressable>
+        </SafeAreaView>
       )
       }
-      
-    </SafeAreaView>
+    </>
   );
 }
 
@@ -118,5 +160,11 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     marginRight: 10,
+  },
+  nav_header_style: {
+    backgroundColor: Colors.background,
+  },
+  nav_header_text: {
+    color: '#fff',
   },
 });
