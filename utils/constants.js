@@ -1,4 +1,4 @@
-export const CLIENT_ID = "TODO: INSERT YOUR CLIENT ID HERE";
+export const CLIENT_ID = "3b96514bb1f5490e964a2d986296ae72";
 export const SCOPES = [
   "user-read-currently-playing",
   "user-read-recently-played",
@@ -9,5 +9,5 @@ export const SCOPES = [
   "user-read-email",
   "user-read-private"
 ];
-export const REDIRECT_URI = "TODO: INSERT YOUR REDIRECT_URI HERE";
-export const ALBUM_ID = "TODO: INSERT YOUR ALBUM ID HERE IF YOU ARE USING ONE";
+export const REDIRECT_URI = "exp://192.168.1.240:19000";
+export const ALBUM_ID = "6qb9MDR0lfsN9a2pw77uJy?si=0ZJ4PZReTWyYUufFoSKI6Q"; // How To Be A Human Being by Glass Animals

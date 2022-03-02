@@ -1,9 +1,13 @@
-import { StyleSheet, Text, SafeAreaView } from "react-native";
+import { StyleSheet, Text, Image, Pressable, SafeAreaView, StatusBar} from "react-native";
 import { useState, useEffect } from "react";
 import { ResponseType, useAuthRequest } from "expo-auth-session";
 import { myTopTracks, albumTracks } from "./utils/apiOptions";
 import { REDIRECT_URI, SCOPES, CLIENT_ID, ALBUM_ID } from "./utils/constants";
 import Colors from "./Themes/colors"
+import Images from "./Themes/images"
+
+import SongList from "./components/SongList"
+import { View, /* StatusBar */} from "react-native-web";
 
 // Endpoints for authorizing with Spotify
 const discovery = {
@@ -12,6 +16,7 @@ const discovery = {
 };
 
 export default function App() {
+  StatusBar.setBarStyle('light-content');
   const [token, setToken] = useState("");
   const [tracks, setTracks] = useState([]);
   const [request, response, promptAsync] = useAuthRequest(
@@ -52,8 +57,23 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* TODO */}
-      <Text style={{ color: "white" }}>Welcome to Assignment 3 - Spotify</Text>
+      
+      {token ? (
+        <>
+          <SafeAreaView style={styles.header}>
+            <Image style={styles.spotify_icon} source={Images.spotify} />
+            <Text style={styles.header_text}>My Top Tracks</Text>
+          </SafeAreaView>
+          <SongList tracks={tracks}/>
+        </>
+      ) : (
+        <Pressable style={styles.connect_button} onPress={promptAsync}>
+          <Image style={styles.spotify_small_icon} source={Images.spotify} />
+          <Text style={styles.connect_text}>CONNECT WITH SPOTIFY</Text>
+        </Pressable>
+      )
+      }
+      
     </SafeAreaView>
   );
 }
@@ -64,5 +84,39 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flex: 1
-  }
+  },
+  connect_button: {
+    backgroundColor: Colors.spotify,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 99999,
+    padding: 10,
+  },
+  spotify_small_icon: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+  },
+  connect_text: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 5,
+  },
+  header_text: {
+    color: 'white',
+    fontSize: 36,
+    fontWeight: 'bold',
+  },
+  spotify_icon: {
+    width: 36,
+    height: 36,
+    marginRight: 10,
+  },
 });
